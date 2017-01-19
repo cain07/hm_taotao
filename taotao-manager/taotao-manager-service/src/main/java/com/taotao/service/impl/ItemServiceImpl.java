@@ -1,5 +1,6 @@
 package com.taotao.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,11 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.taotao.common.pojo.EUDataGridResult;
+import com.taotao.common.utils.IDUtils;
+import com.taotao.mapper.TbItemDescMapper;
 import com.taotao.mapper.TbItemMapper;
 import com.taotao.pojo.TbItem;
+import com.taotao.pojo.TbItemDesc;
 import com.taotao.pojo.TbItemExample;
 import com.taotao.pojo.TbItemExample.Criteria;
 import com.taotao.service.ItemService;
@@ -19,6 +23,9 @@ public class ItemServiceImpl implements ItemService {
 
 	@Autowired
 	private TbItemMapper itemMapper;
+	
+	@Autowired
+	private TbItemDescMapper itemDescMapper ;
 	
 	@Override
 	public TbItem getItemById(long itemId) {
@@ -48,6 +55,28 @@ public class ItemServiceImpl implements ItemService {
 		dataGridResult.setTotal(total);
 		
 		return dataGridResult;
+	}
+
+	@Override
+	public void saveItem(TbItem tbItem, String desc, String itemParams) {
+		// TODO Auto-generated method stub
+		Date date = new Date();
+		long genItemId = IDUtils.genItemId();
+		
+		
+		tbItem.setId(genItemId);
+		tbItem.setUpdated(date);
+		tbItem.setCreated(date);
+		tbItem.setStatus((byte) 1);
+		
+		itemMapper.insert(tbItem);
+		
+		TbItemDesc recorddesc = new TbItemDesc();
+		recorddesc.setItemId(genItemId);
+		recorddesc.setItemDesc(desc);
+		recorddesc.setUpdated(date);
+		recorddesc.setCreated(date);
+		itemDescMapper.insert(recorddesc);
 	}
 
 }
