@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.taotao.common.pojo.EUTreeNode;
+import com.taotao.common.utils.TaotaoResult;
 import com.taotao.pojo.TbItemCat;
 import com.taotao.service.ItemCatService;
 
@@ -36,4 +37,8 @@ public class ItemCatController {
 		}
 		return euTreeNodes;
 	}
+	
+	
+
+	
 }
