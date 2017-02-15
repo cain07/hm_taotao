@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +21,7 @@ import com.taotao.pojo.TbUserExample;
 import com.taotao.pojo.TbUserExample.Criteria;
 import com.taotao.sso.dao.JedisClient;
 import com.taotao.sso.service.UserService;
+import com.taotao.utils.CookieUtils;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -70,7 +74,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public TaotaoResult userLogin(String username, String password) {
+	public TaotaoResult userLogin(String username, String password,
+			HttpServletRequest request, HttpServletResponse response) {
 		TbUserExample example = new TbUserExample();
 		Criteria criteria = example.createCriteria();
 		criteria.andUsernameEqualTo(username);
@@ -88,6 +93,9 @@ public class UserServiceImpl implements UserService {
 		String token = UUID.randomUUID().toString();
 		// 保存用户之前，把用户对象中的密码清空。
 		user.setPassword(null);
+		
+		CookieUtils.setCookie(request, response, "TT_TOKEN", token);
+		
 		// 把用户信息写入redis
 		jedisClient.set(REDIS_USER_SESSION_KEY + ":" + token, JsonUtils.objectToJson(user));
 		// 设置session的过期时间
